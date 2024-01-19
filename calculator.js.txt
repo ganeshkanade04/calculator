@@ -1,0 +1,90 @@
+let currentInput = '0';
+let operator = '';
+let previousInput = '';
+
+function updateDisplay() {
+    document.getElementById('display').innerText = currentInput;
+}
+
+function clearDisplay() {
+    currentInput = '0';
+    operator = '';
+    previousInput = '';
+    updateDisplay();
+}
+
+function appendNumber(number) {
+    if (currentInput === '0' || currentInput === 'Error') {
+        currentInput = number;
+    } else {
+        currentInput += number;
+    }
+    updateDisplay();
+}
+
+function appendDecimal() {
+    if (!currentInput.includes('.')) {
+        currentInput += '.';
+        updateDisplay();
+    }
+}
+
+function setOperator(op) {
+    if (operator !== '') {
+        calculateResult();
+    }
+    operator = op;
+    previousInput = currentInput;
+    currentInput = '0';
+    updateDisplay();
+}
+
+function calculateResult() {
+    let result;
+    const current = parseFloat(currentInput);
+    const previous = parseFloat(previousInput);
+
+    switch (operator) {
+        case '+':
+            result = previous + current;
+            break;
+        case '-':
+            result = previous - current;
+            break;
+        case '*':
+            result = previous * current;
+            break;
+        case '/':
+            if (current !== 0) {
+                result = previous / current;
+            } else {
+                currentInput = 'Error';
+                updateDisplay();
+                return;
+            }
+            break;
+        default:
+            return;
+    }
+
+    currentInput = result.toString();
+    operator = '';
+    previousInput = '';
+    updateDisplay();
+}
+
+document.addEventListener('keydown', function (event) {
+    const key = event.key;
+
+    if (/\d/.test(key)) {
+        appendNumber(key);
+    } else if (key === '.') {
+        appendDecimal();
+    } else if (['+', '-', '*', '/'].includes(key)) {
+        setOperator(key);
+    } else if (key === 'Enter') {
+        calculateResult();
+    } else if (key === 'Escape') {
+        clearDisplay();
+    }
+});
